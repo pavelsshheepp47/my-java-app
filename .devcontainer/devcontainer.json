@@ -1,0 +1,27 @@
+{
+    "name": "Java Labs Environment",
+    "image": "eclipse-temurin:21-jdk-alpine",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "redhat.java",
+                "vscjava.vscode-java-debug",
+                "vscjava.vscode-java-test",
+                "vscjava.vscode-maven",
+                "vscjava.vscode-java-dependency"
+            ],
+            "settings": {
+                "editor.formatOnSave": true,
+                "editor.defaultFormatter": "redhat.java",
+                "[java]": {
+                    "editor.defaultFormatter": "redhat.java",
+                    "editor.tabSize": 2,
+                    "editor.insertSpaces": true
+                },
+                "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+                "java.format.settings.profile": "GoogleStyle"
+            }
+        }
+    }
+}
