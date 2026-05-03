@@ -1,15 +1,17 @@
+package two;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class PracticeTwoApp {
 
     public static void main(String[] args) {
-        // Основное хранилище объектов 
+        // Основное хранилище объектов
         ArrayList<Person> people = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
-        // Главный цикл 
+        // Главный цикл
         while (running) {
             printMenu();
             int choice = readIntInRange(scanner, "Выберите пункт меню (1-6): ", 1, 6);
@@ -92,10 +94,12 @@ public class PracticeTwoApp {
             String nationality = readNonEmptyLine(scanner, "Введите новую национальность: ");
             changed = person.setNationality(nationality);
         } else if (field == 5) {
-            double heightCm = readDoubleInRange(scanner, "Введите новый рост в см (50-250): ", 50.0, 250.0);
+            double heightCm =
+                    readDoubleInRange(scanner, "Введите новый рост в см (50-250): ", 50.0, 250.0);
             changed = person.setHeightCm(heightCm);
         } else if (field == 6) {
-            double weightKg = readDoubleInRange(scanner, "Введите новый вес в кг (2-500): ", 2.0, 500.0);
+            double weightKg =
+                    readDoubleInRange(scanner, "Введите новый вес в кг (2-500): ", 2.0, 500.0);
             changed = person.setWeightKg(weightKg);
         }
 
@@ -123,7 +127,8 @@ public class PracticeTwoApp {
             int index = readIntInRange(scanner, "Введите индекс человека: ", 0, people.size() - 1);
             printPersonCondition(index, people.get(index));
         } else if (mode == 2) {
-            String surnameQuery = readNonEmptyLine(scanner, "Введите фамилию для поиска: ").toLowerCase();
+            String surnameQuery =
+                    readNonEmptyLine(scanner, "Введите фамилию для поиска: ").toLowerCase();
             boolean found = false;
 
             for (int i = 0; i < people.size(); i++) {
@@ -147,7 +152,7 @@ public class PracticeTwoApp {
 
     private static void printPersonCondition(int index, Person person) {
         System.out.println("Индекс " + index + ": " + person);
-        System.out.println("  Категория физического состояния: " + person.getPhysicalCondition());
+        System.out.println("  Категория физического состояния: " + getPhysicalCondition(person));
     }
 
     private static String extractSurname(String fullName) {
@@ -174,7 +179,7 @@ public class PracticeTwoApp {
         System.out.println("6. Вес в кг (weightKg)");
         int field = readIntInRange(scanner, "Выберите поле (1-6): ", 1, 6);
 
-        //  сортировка выбором по возрастанию
+        // сортировка выбором по возрастанию
         for (int i = 0; i < people.size() - 1; i++) {
             int minIndex = i;
 
@@ -230,7 +235,7 @@ public class PracticeTwoApp {
     }
 
     private static int readIntInRange(Scanner scanner, String prompt, int min, int max) {
-        
+
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine().trim();
@@ -249,8 +254,9 @@ public class PracticeTwoApp {
         }
     }
 
-    private static double readDoubleInRange(Scanner scanner, String prompt, double min, double max) {
-        
+    private static double readDoubleInRange(Scanner scanner, String prompt, double min,
+            double max) {
+
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine().trim().replace(',', '.');
@@ -270,14 +276,14 @@ public class PracticeTwoApp {
     }
 
     private static String readGender(Scanner scanner) {
-        
+
         while (true) {
             System.out.print("Введите пол (мужской/женский): ");
             String input = scanner.nextLine().trim().toLowerCase();
             if (input.equals("мужской") || input.equals("женский")) {
                 return input;
             }
-            System.out.println("Некорректное значение. Допустимо: мужской или женский.");
+            System.out.println("Некорректное значение. Допустимо: мужск��й или женский.");
         }
     }
 
@@ -338,7 +344,7 @@ public class PracticeTwoApp {
     }
 
     private static double parsePositiveDoubleWithoutException(String value) {
-        // Ручной разбор десятичного 
+        // Ручной разбор десятичного
         double integerPart = 0.0;
         double fractionPart = 0.0;
         double divisor = 10.0;
@@ -362,115 +368,18 @@ public class PracticeTwoApp {
 
         return integerPart + fractionPart;
     }
-}
 
-class Person {
-    private String fullName;
-    private int age;
-    private String gender;
-    private String nationality;
-    private double heightCm;
-    private double weightKg;
+    /**
+     * Считает параметры человека.
+     *
+     * @param person
+     * @return возвращает категорию по весу
+     */
+    private static String getPhysicalCondition(Person person) {
+        int age = person.getAge();
+        double heightCm = person.getHeightCm();
+        double weightKg = person.getWeightKg();
 
-    public Person() {
-        // Значения "неизвестно" для пустого объекта 
-        this.fullName = "неизвестно";
-        this.age = -1;
-        this.gender = "неизвестно";
-        this.nationality = "неизвестно";
-        this.heightCm = -1.0;
-        this.weightKg = -1.0;
-    }
-
-    public Person(String fullName, int age, String gender, String nationality, double heightCm, double weightKg) {
-        this();
-        // Используем сеттеры
-        setFullName(fullName);
-        setAge(age);
-        setGender(gender);
-        setNationality(nationality);
-        setHeightCm(heightCm);
-        setWeightKg(weightKg);
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public double getHeightCm() {
-        return heightCm;
-    }
-
-    public double getWeightKg() {
-        return weightKg;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public String getNationality() {
-        return nationality;
-    }
-
-    public boolean setFullName(String fullName) {
-        if (fullName == null || fullName.trim().isEmpty()) {
-            return false;
-        }
-        this.fullName = fullName.trim();
-        return true;
-    }
-
-    public boolean setAge(int age) {
-        if (age < 0 || age > 130) {
-            return false;
-        }
-        this.age = age;
-        return true;
-    }
-
-    public boolean setGender(String gender) {
-        if (gender == null) {
-            return false;
-        }
-        String normalized = gender.trim().toLowerCase();
-        if (!normalized.equals("мужской") && !normalized.equals("женский")) {
-            return false;
-        }
-        this.gender = normalized;
-        return true;
-    }
-
-    public boolean setNationality(String nationality) {
-        if (nationality == null || nationality.trim().isEmpty()) {
-            return false;
-        }
-        this.nationality = nationality.trim();
-        return true;
-    }
-
-    public boolean setHeightCm(double heightCm) {
-        if (heightCm < 50.0 || heightCm > 250.0) {
-            return false;
-        }
-        this.heightCm = heightCm;
-        return true;
-    }
-
-    public boolean setWeightKg(double weightKg) {
-        if (weightKg < 2.0 || weightKg > 500.0) {
-            return false;
-        }
-        this.weightKg = weightKg;
-        return true;
-    }
-
-    public String getPhysicalCondition() {
-        // Если данных недостаточно, вычисление результата невозможно.
         if (age < 0 || heightCm <= 0 || weightKg <= 0) {
             return "недостаточно данных";
         }
@@ -496,15 +405,5 @@ class Person {
         } else {
             return "ожирение";
         }
-    }
-
-    @Override
-    public String toString() {
-        return "ФИО: " + fullName
-                + ", возраст: " + age
-                + ", пол: " + gender
-                + ", национальность: " + nationality
-                + ", рост (см): " + heightCm
-                + ", вес (кг): " + weightKg;
     }
 }
