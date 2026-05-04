@@ -22,13 +22,13 @@ public class PracticeTwoApp {
             } else if (choice == 2) {
                 Person person = createPersonFromInput(scanner);
                 people.add(person);
-                System.out.println("Объект Person добавлен.");
+                System.out.println("Объект человек добавлен.");
             } else if (choice == 3) {
                 editPerson(scanner, people);
             } else if (choice == 4) {
-                checkPhysicalCondition(scanner, people);
+                searchBySurname(scanner, people);
             } else if (choice == 5) {
-                sortPeopleByField(scanner, people);
+                displayAndSortList(scanner, people);
             } else if (choice == 6) {
                 running = false;
                 System.out.println("Работа программы завершена.");
@@ -41,14 +41,14 @@ public class PracticeTwoApp {
         System.out.println("=== МЕНЮ ===");
         System.out.println("1. Добавить пустой объект (конструктор по умолчанию)");
         System.out.println("2. Добавить объект с данными пользователя (конструктор с параметрами)");
-        System.out.println("3. Редактировать поле объекта по индексу");
-        System.out.println("4. Проверить состояние человека (по индексу, по фамилии, для всех)");
-        System.out.println("5. Отсортировать объекты по выбранному полю (по возрастанию)");
+        System.out.println("3. Редактировать поле объекта");
+        System.out.println("4. Расчитать индекс тела по фамилии");
+        System.out.println("5. Вывод списка и сортировка");
         System.out.println("6. Выход");
     }
-
+    /** Создать обьект. */
     private static Person createPersonFromInput(Scanner scanner) {
-        // Последовательно собираем и проверяем все поля объекта.
+        /**  Последовательно собираем и проверяем все поля объекта */
         String fullName = readNonEmptyLine(scanner, "Введите ФИО: ");
         int age = readIntInRange(scanner, "Введите возраст (0-130): ", 0, 130);
         String gender = readGender(scanner);
@@ -59,23 +59,25 @@ public class PracticeTwoApp {
         return new Person(fullName, age, gender, nationality, heightCm, weightKg);
     }
 
+
+    /** редактировать атрибуты, но сначала проверить не пустой */
     private static void editPerson(Scanner scanner, ArrayList<Person> people) {
         if (people.isEmpty()) {
             System.out.println("Список пуст. Редактировать нечего.");
             return;
         }
 
-        printIndexList(people);
+        printPeopleList(people);
         int index = readIntInRange(scanner, "Введите индекс объекта: ", 0, people.size() - 1);
         Person person = people.get(index);
 
         System.out.println("Выберите поле для редактирования:");
-        System.out.println("1. ФИО (fullName)");
-        System.out.println("2. Возраст (age)");
-        System.out.println("3. Пол (gender)");
-        System.out.println("4. Национальность (nationality)");
-        System.out.println("5. Рост в см (heightCm)");
-        System.out.println("6. Вес в кг (weightKg)");
+        System.out.println("1. ФИО");
+        System.out.println("2. Возраст");
+        System.out.println("3. Пол");
+        System.out.println("4. Национальность");
+        System.out.println("5. Рост в см");
+        System.out.println("6. Вес в кг");
         int field = readIntInRange(scanner, "Поле (1-6): ", 1, 6);
 
         boolean changed = false;
@@ -110,85 +112,71 @@ public class PracticeTwoApp {
         }
     }
 
-    private static void checkPhysicalCondition(Scanner scanner, ArrayList<Person> people) {
+    private static void searchBySurname(Scanner scanner, ArrayList<Person> people) {
         if (people.isEmpty()) {
             System.out.println("Список пуст.");
             return;
         }
 
-        System.out.println("Проверка состояния:");
-        System.out.println("1. По индексу человека");
-        System.out.println("2. Поиск по фамилии");
-        System.out.println("3. Для всех людей");
-        int mode = readIntInRange(scanner, "Выберите режим (1-3): ", 1, 3);
+        String surnameQuery =
+                readNonEmptyLine(scanner, "Введите фамилию для поиска: ").toLowerCase();
+        boolean found = false;
 
-        if (mode == 1) {
-            printIndexList(people);
-            int index = readIntInRange(scanner, "Введите индекс человека: ", 0, people.size() - 1);
-            printPersonCondition(index, people.get(index));
-        } else if (mode == 2) {
-            String surnameQuery =
-                    readNonEmptyLine(scanner, "Введите фамилию для поиска: ").toLowerCase();
-            boolean found = false;
+        for (int i = 0; i < people.size(); i++) {
+            Person person = people.get(i);
+            String surname = extractSurname(person.getFullName());
+            if (surname.equals(surnameQuery)) {
+                System.out.println("Индекс [" + i + "] | " + formatPerson(person));
+                System.out.println(
+                        "  Категория физического состояния: " + getPhysicalCondition(person));
+                found = true;
+            }
+        }
 
-            for (int i = 0; i < people.size(); i++) {
-                Person person = people.get(i);
-                String surname = extractSurname(person.getFullName());
-                if (surname.equals(surnameQuery)) {
-                    printPersonCondition(i, person);
-                    found = true;
-                }
-            }
-
-            if (!found) {
-                System.out.println("Люди с такой фамилией не найдены.");
-            }
-        } else {
-            for (int i = 0; i < people.size(); i++) {
-                printPersonCondition(i, people.get(i));
-            }
+        if (!found) {
+            System.out.println("Человек с фамилией '" + surnameQuery + "' не найден.");
         }
     }
 
-    private static void printPersonCondition(int index, Person person) {
-        System.out.println("Индекс " + index + ": " + person);
-        System.out.println("  Категория физического состояния: " + getPhysicalCondition(person));
-    }
-
-    private static String extractSurname(String fullName) {
-        String normalized = fullName.trim().toLowerCase();
-        int spaceIndex = normalized.indexOf(' ');
-        if (spaceIndex == -1) {
-            return normalized;
+    private static void displayAndSortList(Scanner scanner, ArrayList<Person> people) {
+        if (people.isEmpty()) {
+            System.out.println("Список пуст.");
+            return;
         }
-        return normalized.substring(0, spaceIndex);
+
+        System.out.println("\n--- Список объектов (по индексу) ---");
+        printPeopleList(people);
+
+        String sortChoice =
+                readNonEmptyLine(scanner, "Хотите отсортировать? (да/нет): ").toLowerCase();
+        if (sortChoice.equals("да") || sortChoice.equals("д")) {
+            sortAndPrintList(scanner, people);
+        }
     }
 
-    private static void sortPeopleByField(Scanner scanner, ArrayList<Person> people) {
+    private static void sortAndPrintList(Scanner scanner, ArrayList<Person> people) {
         if (people.size() < 2) {
-            System.out.println("Для сортировки нужно минимум 2 объекта.");
+            System.out.println("Для сортировки нужно минимум 2 человека.");
             return;
         }
 
         System.out.println("Сортировать по полю:");
-        System.out.println("1. ФИО (fullName)");
-        System.out.println("2. Возраст (age)");
-        System.out.println("3. Пол (gender)");
-        System.out.println("4. Национальность (nationality)");
-        System.out.println("5. Рост в см (heightCm)");
-        System.out.println("6. Вес в кг (weightKg)");
+        System.out.println("1. ФИО");
+        System.out.println("2. Возраст");
+        System.out.println("3. Пол");
+        System.out.println("4. Национальность");
+        System.out.println("5. Рост в см");
+        System.out.println("6. Вес в кг");
         int field = readIntInRange(scanner, "Выберите поле (1-6): ", 1, 6);
 
-        // сортировка выбором по возрастанию
+        // Сортировка выбором по возрастанию
         for (int i = 0; i < people.size() - 1; i++) {
             int minIndex = i;
-
             for (int j = i + 1; j < people.size(); j++) {
                 if (isLess(people.get(j), people.get(minIndex), field)) {
                     minIndex = j;
                 }
             }
-
             if (minIndex != i) {
                 Person temp = people.get(i);
                 people.set(i, people.get(minIndex));
@@ -196,7 +184,8 @@ public class PracticeTwoApp {
             }
         }
 
-        System.out.println("Сортировка завершена.");
+        System.out.println("\n--- Отсортированный список ---");
+        printPeopleList(people);
     }
 
     private static boolean isLess(Person left, Person right, int field) {
@@ -215,11 +204,25 @@ public class PracticeTwoApp {
         }
     }
 
-    private static void printIndexList(ArrayList<Person> people) {
-        System.out.println("Объекты:");
+    private static void printPeopleList(ArrayList<Person> people) {
         for (int i = 0; i < people.size(); i++) {
-            System.out.println("[" + i + "] " + people.get(i).getFullName());
+            System.out.println("[" + i + "] | " + formatPerson(people.get(i)));
         }
+    }
+
+    private static String formatPerson(Person person) {
+        return "ФИО: " + person.getFullName() + ", возраст: " + person.getAge() + ", пол: "
+                + person.getGender() + ", национальность: " + person.getNationality()
+                + ", рост (см): " + person.getHeightCm() + ", вес (кг): " + person.getWeightKg();
+    }
+
+    private static String extractSurname(String fullName) {
+        String normalized = fullName.trim().toLowerCase();
+        int spaceIndex = normalized.indexOf(' ');
+        if (spaceIndex == -1) {
+            return normalized;
+        }
+        return normalized.substring(0, spaceIndex);
     }
 
     private static String readNonEmptyLine(Scanner scanner, String prompt) {
@@ -283,7 +286,7 @@ public class PracticeTwoApp {
             if (input.equals("мужской") || input.equals("женский")) {
                 return input;
             }
-            System.out.println("Некорректное значение. Допустимо: мужск��й или женский.");
+            System.out.println("Некорректное значение. Допустимо: мужской или женский.");
         }
     }
 
@@ -344,7 +347,7 @@ public class PracticeTwoApp {
     }
 
     private static double parsePositiveDoubleWithoutException(String value) {
-        // Ручной разбор десятичного
+        // Ручной разбор десятичного, посоветовала нейронка
         double integerPart = 0.0;
         double fractionPart = 0.0;
         double divisor = 10.0;
